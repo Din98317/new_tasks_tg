@@ -126,26 +126,43 @@ async function createTask() {
 
         // Функция для загрузки и отображения задач пользователя
         async function loadTasks() {
-            try {
-                const response = await fetch(`${BOT_API_URL}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: USER_ID,
-                        text: '/getmytasks'
-                    })
-                });
+    try {
+        const RAILWAY_URL = 'https://friendly-enjoyment.up.railway.app';
+        const response = await fetch(RAILWAY_URL + '/gettasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: USER_ID
+            })
+        });
 
-                // В реальном приложении здесь будет парсинг ответа от бота
-                // Для демонстрации просто очищаем список
-                document.getElementById('taskList').innerHTML = '<div class="task-item">Загрузка...</div>';
-                
-            } catch (error) {
-                console.error('Ошибка:', error);
-            }
+        if (response.ok) {
+            const data = await response.json();
+            displayTasks(data.tasks);
         }
+    } catch (error) {
+        console.error('Ошибка загрузки задач:', error);
+    }
+}
+
+        function displayTasks(tasks) {
+    const taskList = document.getElementById('taskList');
+    
+    if (!tasks || tasks.length === 0) {
+        taskList.innerHTML = '<div class="task-item">📝 Задач пока нет</div>';
+        return;
+    }
+
+    taskList.innerHTML = tasks.map(task => `
+        <div class="task-item">
+            <div class="task-title">${task.title}</div>
+            <div class="task-datetime">📅 ${new Date(task.datetime).toLocaleString('ru-RU')}</div>
+        </div>
+    `).join('');
+}
+
 
         // Загружаем задачи при запуске приложения
         loadTasks();
