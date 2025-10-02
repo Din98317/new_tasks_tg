@@ -41,6 +41,9 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .task-form button:hover {
+            background-color: #1a6fb3;
+        }
         .task-list {
             background: white;
             border-radius: 12px;
@@ -57,126 +60,310 @@
         .task-title {
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 16px;
         }
         .task-datetime {
             font-size: 14px;
             color: #666;
+            margin-bottom: 10px;
+        }
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .edit-btn, .delete-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 80px;
+        }
+        .edit-btn {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2481cc;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="header">
+            <h1>📝 Семейные Задачи</h1>
+            <p>Управляйте задачами и получайте напоминания</p>
+        </div>
+
         <div class="task-form">
-            <input type="text" id="taskTitle" placeholder="Название задачи">
+            <h3>➕ Новая задача</h3>
+            <input type="text" id="taskTitle" placeholder="Название задачи (например: Посетить врача)">
             <input type="datetime-local" id="taskDateTime">
             <button onclick="createTask()">Добавить задачу</button>
         </div>
+
         <div class="task-list" id="taskList">
-            <!-- Задачи будут здесь -->
+            <div class="loading">🔄 Загрузка задач...</div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрыть приложение на весь экран
-        tg.ready(); // Сообщить Telegram, что приложение готово
+        tg.expand();
+        tg.ready();
 
-        const BOT_API_URL = 'https://api.telegram.org/bot8438607431:AAHQZWYuENj3af5THn8TgFWofTx0WyT8_gU';
+        const RAILWAY_URL = 'https://railwaybot-production-e3bc.up.railway.app';
         const USER_ID = tg.initDataUnsafe.user.id;
 
-// Функция для создания новой задачи
-async function createTask() {
-    const title = document.getElementById('taskTitle').value;
-    const datetime = document.getElementById('taskDateTime').value;
-
-    if (!title || !datetime) {
-        alert('Пожалуйста, заполните все поля');
-        return;
-    }
-
-    const task = {
-        userId: USER_ID,
-        title: title,
-        datetime: datetime,
-        notified: false
-    };
-
-    try {
-        const RAILWAY_URL = 'https://railwaybot-production-e3bc.up.railway.app';
-        
-        console.log('📤 Отправляю задачу на:', RAILWAY_URL);
-        console.log('📝 Данные задачи:', task);
-        
-        const response = await fetch(RAILWAY_URL + '/addtask', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(task)
-        });
-
-        console.log('📥 Статус ответа:', response.status);
-        
-        if (response.ok) {
-            const result = await response.json();
-            console.log('✅ Ответ сервера:', result);
-            
-            document.getElementById('taskTitle').value = '';
-            document.getElementById('taskDateTime').value = '';
-            alert('✅ Задача добавлена! Вы получите уведомление за 4 часа до начала.');
-        } else {
-            const errorText = await response.text();
-            console.error('❌ Ошибка сервера:', response.status, errorText);
-            alert('❌ Ошибка сервера: ' + response.status);
-        }
-    } catch (error) {
-        console.error('❌ Ошибка соединения:', error);
-        alert('❌ Ошибка соединения: ' + error.message);
-    }
-}
-
-        // Функция для загрузки и отображения задач пользователя
-        async function loadTasks() {
-    try {
-        const RAILWAY_URL = 'https://friendly-enjoyment.up.railway.app';
-        const response = await fetch(RAILWAY_URL + '/gettasks', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: USER_ID
-            })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            displayTasks(data.tasks);
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки задач:', error);
-    }
-}
-
-        function displayTasks(tasks) {
-    const taskList = document.getElementById('taskList');
-    
-    if (!tasks || tasks.length === 0) {
-        taskList.innerHTML = '<div class="task-item">📝 Задач пока нет</div>';
-        return;
-    }
-
-    taskList.innerHTML = tasks.map(task => `
-        <div class="task-item">
-            <div class="task-title">${task.title}</div>
-            <div class="task-datetime">📅 ${new Date(task.datetime).toLocaleString('ru-RU')}</div>
-        </div>
-    `).join('');
-}
-
-
-        // Загружаем задачи при запуске приложения
+        // Загружаем задачи при запуске
         loadTasks();
+
+        // Функция для создания новой задачи
+        async function createTask() {
+            const title = document.getElementById('taskTitle').value;
+            const datetime = document.getElementById('taskDateTime').value;
+
+            if (!title || !datetime) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            const task = {
+                userId: USER_ID,
+                title: title,
+                datetime: datetime,
+                notified: false
+            };
+
+            try {
+                const response = await fetch(RAILWAY_URL + '/addtask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(task)
+                });
+
+                if (response.ok) {
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDateTime').value = '';
+                    alert('✅ Задача добавлена! Вы получите уведомление за 5 часов до начала.');
+                    loadTasks(); // Обновляем список
+                } else {
+                    const errorData = await response.json();
+                    alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка соединения с сервером');
+            }
+        }
+
+        // Функция для загрузки задач
+        async function loadTasks() {
+            try {
+                const response = await fetch(RAILWAY_URL + '/gettasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: USER_ID
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayTasks(data.tasks);
+                } else {
+                    showError('Ошибка загрузки задач');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки задач:', error);
+                showError('Ошибка соединения');
+            }
+        }
+
+        // Функция для отображения задач
+        function displayTasks(tasks) {
+            const taskList = document.getElementById('taskList');
+            
+            if (!tasks || tasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div>Задач пока нет</div>
+                        <div style="font-size: 12px; margin-top: 5px;">Создайте первую задачу!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Сортируем задачи по дате (сначала ближайшие)
+            tasks.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+            taskList.innerHTML = tasks.map(task => {
+                const date = new Date(task.datetime);
+                const now = new Date();
+                const isPast = date < now;
+                const statusIcon = task.notified ? '🔔' : (isPast ? '✅' : '⏰');
+                const statusText = task.notified ? 'Уведомление отправлено' : 
+                                 isPast ? 'Завершено' : 'Ожидает';
+                const pastClass = isPast ? 'style="opacity: 0.6;"' : '';
+
+                return `
+                    <div class="task-item" ${pastClass}>
+                        <div class="task-title">${task.title} ${statusIcon}</div>
+                        <div class="task-datetime">
+                            📅 ${date.toLocaleString('ru-RU')}
+                            <br>${statusText}
+                        </div>
+                        <div class="task-actions">
+                            <button class="edit-btn" onclick="editTask('${task.id}', '${task.title}', '${task.datetime}')">
+                                ✏️ Изменить
+                            </button>
+                            <button class="delete-btn" onclick="deleteTask('${task.id}', '${task.title}')">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Функция для редактирования задачи
+        async function editTask(taskId, currentTitle, currentDatetime) {
+            // Экранируем кавычки в названии
+            const safeTitle = currentTitle.replace(/"/g, '&quot;');
+            
+            const newTitle = prompt('Введите новое название задачи:', safeTitle);
+            if (newTitle === null) return;
+
+            // Форматируем дату для input[type=datetime-local]
+            const date = new Date(currentDatetime);
+            const formattedDate = date.toISOString().slice(0, 16);
+
+            const newDatetime = prompt('Введите новую дату и время:', formattedDate);
+            if (newDatetime === null) return;
+
+            try {
+                const response = await fetch(RAILWAY_URL + '/updatetask', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        userId: USER_ID,
+                        title: newTitle,
+                        datetime: newDatetime
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Задача обновлена!');
+                    loadTasks();
+                } else {
+                    const errorData = await response.json();
+                    alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка обновления:', error);
+                alert('❌ Ошибка соединения');
+            }
+        }
+
+        // Функция для удаления задачи
+        async function deleteTask(taskId, taskTitle) {
+            if (!confirm(`❌ Вы уверены что хотите удалить задачу?\n"${taskTitle}"`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RAILWAY_URL + '/deletetask', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        userId: USER_ID
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Задача удалена!');
+                    loadTasks();
+                } else {
+                    const errorData = await response.json();
+                    alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка удаления:', error);
+                alert('❌ Ошибка соединения');
+            }
+        }
+
+        // Функция показа ошибки
+        function showError(message) {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">❌</div>
+                    <div>${message}</div>
+                    <button onclick="loadTasks()" style="margin-top: 10px; padding: 8px 16px; background: #2481cc; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        Повторить
+                    </button>
+                </div>
+            `;
+        }
+
+        // Обновляем дату/время по умолчанию на завтра в это же время
+        window.addEventListener('DOMContentLoaded', () => {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setMinutes(0, 0, 0);
+            
+            const datetimeInput = document.getElementById('taskDateTime');
+            datetimeInput.value = tomorrow.toISOString().slice(0, 16);
+        });
     </script>
 </body>
 </html>
