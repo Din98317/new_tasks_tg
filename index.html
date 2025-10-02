@@ -18,6 +18,45 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2481cc;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .family-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .family-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .family-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .no-family {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
         .task-form {
             background: white;
             padding: 20px;
@@ -25,7 +64,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .task-form input, .task-form button {
+        .task-form input, .task-form select, .task-form button {
             width: 100%;
             padding: 12px;
             margin-bottom: 10px;
@@ -44,6 +83,36 @@
         .task-form button:hover {
             background-color: #1a6fb3;
         }
+        .task-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .task-type-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .task-type-btn.active {
+            border-color: #2481cc;
+            background: #e3f2fd;
+            color: #2481cc;
+        }
+        .task-type-btn.personal.active {
+            border-color: #28a745;
+            background: #e8f5e8;
+            color: #28a745;
+        }
+        .task-type-btn.family.active {
+            border-color: #667eea;
+            background: #eef2ff;
+            color: #667eea;
+        }
         .task-list {
             background: white;
             border-radius: 12px;
@@ -53,14 +122,44 @@
         .task-item {
             padding: 15px 20px;
             border-bottom: 1px solid #eee;
+            position: relative;
         }
         .task-item:last-child {
             border-bottom: none;
         }
+        .task-item.family-task {
+            border-left: 4px solid #667eea;
+            background: #f8f9ff;
+        }
+        .task-item.personal-task {
+            border-left: 4px solid #28a745;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
         .task-title {
             font-weight: bold;
-            margin-bottom: 5px;
             font-size: 16px;
+            flex: 1;
+            margin-right: 10px;
+        }
+        .task-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .badge-personal {
+            background: #e8f5e8;
+            color: #28a745;
+        }
+        .badge-family {
+            background: #eef2ff;
+            color: #667eea;
         }
         .task-datetime {
             font-size: 14px;
@@ -109,38 +208,145 @@
             padding: 20px;
             color: #666;
         }
-        .header {
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
             text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: #2481cc;
+            color: white;
+        }
+        .family-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .header h1 {
-            margin: 0;
-            color: #2481cc;
-            font-size: 24px;
+        .family-section h3 {
+            margin-top: 0;
+            color: #667eea;
         }
-        .header p {
-            margin: 5px 0 0 0;
-            color: #666;
+        .create-family-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .user-id {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
             font-size: 14px;
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+        .invite-section {
+            display: flex;
+            gap: 10px;
+        }
+        .invite-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .invite-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 Семейные Задачи</h1>
-            <p>Управляйте задачами и получайте напоминания</p>
+            <h1>👨‍👩‍👧‍👦 Семейные Задачи</h1>
+            <p>Управляйте личными и общими задачами семьи</p>
         </div>
 
-        <div class="task-form">
-            <h3>➕ Новая задача</h3>
-            <input type="text" id="taskTitle" placeholder="Название задачи (например: Посетить врача)">
-            <input type="datetime-local" id="taskDateTime">
-            <button onclick="createTask()">Добавить задачу</button>
+        <div id="familySection"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('tasks')">📋 Задачи</div>
+            <div class="tab" onclick="switchTab('family')">👨‍👩‍👧‍👦 Семья</div>
         </div>
 
-        <div class="task-list" id="taskList">
-            <div class="loading">🔄 Загрузка задач...</div>
+        <div id="tasksTab">
+            <div class="task-form">
+                <h3>➕ Новая задача</h3>
+                
+                <div class="task-type-selector">
+                    <div class="task-type-btn personal active" onclick="selectTaskType('personal')">
+                        👤 Личная
+                    </div>
+                    <div class="task-type-btn family" onclick="selectTaskType('family')">
+                        👨‍👩‍👧‍👦 Семейная
+                    </div>
+                </div>
+
+                <input type="text" id="taskTitle" placeholder="Название задачи (например: Семейный ужин)">
+                <input type="datetime-local" id="taskDateTime">
+                <button onclick="createTask()">Добавить задачу</button>
+            </div>
+
+            <div class="task-list" id="taskList">
+                <div class="loading">🔄 Загрузка задач...</div>
+            </div>
+        </div>
+
+        <div id="familyTab" style="display: none;">
+            <div class="family-section">
+                <h3>👨‍👩‍👧‍👦 Управление семьей</h3>
+                
+                <div id="familyManagement">
+                    <div class="no-family">
+                        <p>❌ Вы не состоите в семье</p>
+                        <button class="create-family-btn" onclick="createFamilyPrompt()">
+                            🏠 Создать семью
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>💡 Ваш ID для приглашений:</h4>
+                    <div class="user-id" id="userIdDisplay">Загрузка...</div>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                        Поделитесь этим ID с теми, кого хотите пригласить в семью
+                    </p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>📨 Пригласить в семью</h4>
+                    <div class="invite-section">
+                        <input type="text" class="invite-input" id="inviteUserId" placeholder="ID пользователя">
+                        <button class="invite-btn" onclick="inviteToFamily()">Пригласить</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -151,11 +357,180 @@
 
         const RAILWAY_URL = 'https://railwaybot-production-e3bc.up.railway.app';
         const USER_ID = tg.initDataUnsafe.user.id;
+        
+        let currentTaskType = 'personal';
+        let userFamily = null;
 
-        // Загружаем задачи при запуске
-        loadTasks();
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTasks();
+            loadFamilyInfo();
+            setupDefaultDateTime();
+            document.getElementById('userIdDisplay').textContent = USER_ID;
+        });
 
-        // Функция для создания новой задачи
+        // Переключение вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('tasksTab').style.display = 'none';
+            document.getElementById('familyTab').style.display = 'none';
+            
+            if (tabName === 'tasks') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('tasksTab').style.display = 'block';
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('familyTab').style.display = 'block';
+                loadFamilyInfo();
+            }
+        }
+
+        // Выбор типа задачи
+        function selectTaskType(type) {
+            currentTaskType = type;
+            document.querySelectorAll('.task-type-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.task-type-btn.${type}`).classList.add('active');
+            
+            // Обновляем placeholder в зависимости от типа
+            const titleInput = document.getElementById('taskTitle');
+            if (type === 'family') {
+                titleInput.placeholder = 'Название семейной задачи (например: Семейный ужин)';
+            } else {
+                titleInput.placeholder = 'Название личной задачи (например: Посетить врача)';
+            }
+        }
+
+        // Загрузка информации о семье
+        async function loadFamilyInfo() {
+            try {
+                const response = await fetch(RAILWAY_URL + '/gettasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: USER_ID
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    userFamily = data.family;
+                    updateFamilyUI();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки информации о семье:', error);
+            }
+        }
+
+        // Обновление UI семьи
+        function updateFamilyUI() {
+            const familySection = document.getElementById('familySection');
+            const familyManagement = document.getElementById('familyManagement');
+
+            if (userFamily) {
+                // Показываем информацию о семье
+                familySection.innerHTML = `
+                    <div class="family-info">
+                        <h3>👨‍👩‍👧‍👦 ${userFamily.name}</h3>
+                        <p>Участников: ${userFamily.members.length}</p>
+                        <p style="font-size: 12px; opacity: 0.7;">ID семьи: ${userFamily.id}</p>
+                    </div>
+                `;
+
+                familyManagement.innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="color: #28a745;">✅ Вы в семье "${userFamily.name}"</p>
+                        <p style="font-size: 14px; color: #666;">
+                            Участников: ${userFamily.members.length}<br>
+                            Создана: ${new Date(userFamily.createdAt).toLocaleDateString('ru-RU')}
+                        </p>
+                    </div>
+                `;
+            } else {
+                // Показываем приглашение создать семью
+                familySection.innerHTML = '';
+                familyManagement.innerHTML = `
+                    <div class="no-family">
+                        <p>❌ Вы не состоите в семье</p>
+                        <button class="create-family-btn" onclick="createFamilyPrompt()">
+                            🏠 Создать семью
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Создание семьи
+        async function createFamilyPrompt() {
+            const familyName = prompt('Введите название семьи:');
+            if (!familyName) return;
+
+            try {
+                const response = await fetch(RAILWAY_URL + '/createfamily', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: USER_ID,
+                        familyName: familyName
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Семья создана!');
+                    loadFamilyInfo();
+                    switchTab('family');
+                } else {
+                    const errorData = await response.json();
+                    alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка создания семьи:', error);
+                alert('❌ Ошибка соединения');
+            }
+        }
+
+        // Приглашение в семью
+        async function inviteToFamily() {
+            const inviteUserId = document.getElementById('inviteUserId').value.trim();
+            if (!inviteUserId) {
+                alert('Введите ID пользователя');
+                return;
+            }
+
+            if (inviteUserId === USER_ID) {
+                alert('Нельзя пригласить самого себя');
+                return;
+            }
+
+            try {
+                const response = await fetch(RAILWAY_URL + '/invitetofamily', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: USER_ID,
+                        inviteUserId: inviteUserId
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Приглашение отправлено!');
+                    document.getElementById('inviteUserId').value = '';
+                } else {
+                    const errorData = await response.json();
+                    alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка приглашения:', error);
+                alert('❌ Ошибка соединения');
+            }
+        }
+
+        // Создание задачи
         async function createTask() {
             const title = document.getElementById('taskTitle').value;
             const datetime = document.getElementById('taskDateTime').value;
@@ -165,11 +540,17 @@
                 return;
             }
 
+            // Проверяем, можно ли создать семейную задачу
+            if (currentTaskType === 'family' && !userFamily) {
+                alert('❌ Для создания семейной задачи нужно состоять в семье!\n\nПерейдите во вкладку "Семья" чтобы создать или присоединиться к семье.');
+                return;
+            }
+
             const task = {
                 userId: USER_ID,
                 title: title,
                 datetime: datetime,
-                notified: false
+                isFamilyTask: currentTaskType === 'family'
             };
 
             try {
@@ -183,9 +564,9 @@
 
                 if (response.ok) {
                     document.getElementById('taskTitle').value = '';
-                    document.getElementById('taskDateTime').value = '';
-                    alert('✅ Задача добавлена! Вы получите уведомление за 5 часов до начала.');
-                    loadTasks(); // Обновляем список
+                    setupDefaultDateTime();
+                    alert('✅ Задача добавлена!');
+                    loadTasks();
                 } else {
                     const errorData = await response.json();
                     alert('❌ Ошибка: ' + (errorData.error || 'Неизвестная ошибка'));
@@ -196,7 +577,7 @@
             }
         }
 
-        // Функция для загрузки задач
+        // Загрузка задач
         async function loadTasks() {
             try {
                 const response = await fetch(RAILWAY_URL + '/gettasks', {
@@ -211,6 +592,8 @@
 
                 if (response.ok) {
                     const data = await response.json();
+                    userFamily = data.family;
+                    updateFamilyUI();
                     displayTasks(data.tasks);
                 } else {
                     showError('Ошибка загрузки задач');
@@ -221,7 +604,7 @@
             }
         }
 
-        // Функция для отображения задач
+        // Отображение задач
         function displayTasks(tasks) {
             const taskList = document.getElementById('taskList');
             
@@ -243,23 +626,36 @@
                 const date = new Date(task.datetime);
                 const now = new Date();
                 const isPast = date < now;
+                const isFamilyTask = task.isFamilyTask;
+                const isOwnTask = task.userId == USER_ID;
+                
                 const statusIcon = task.notified ? '🔔' : (isPast ? '✅' : '⏰');
                 const statusText = task.notified ? 'Уведомление отправлено' : 
                                  isPast ? 'Завершено' : 'Ожидает';
-                const pastClass = isPast ? 'style="opacity: 0.6;"' : '';
+                
+                const taskClass = isFamilyTask ? 'family-task' : 'personal-task';
+                const badgeClass = isFamilyTask ? 'badge-family' : 'badge-personal';
+                const badgeText = isFamilyTask ? '👨‍👩‍👧‍👦 Семейная' : '👤 Личная';
+                const authorText = isFamilyTask && !isOwnTask ? `<div style="font-size: 12px; color: #888; margin-top: 5px;">Добавил: другой участник</div>` : '';
+
+                const pastStyle = isPast ? 'style="opacity: 0.6;"' : '';
 
                 return `
-                    <div class="task-item" ${pastClass}>
-                        <div class="task-title">${task.title} ${statusIcon}</div>
+                    <div class="task-item ${taskClass}" ${pastStyle}>
+                        <div class="task-header">
+                            <div class="task-title">${task.title} ${statusIcon}</div>
+                            <div class="task-badge ${badgeClass}">${badgeText}</div>
+                        </div>
                         <div class="task-datetime">
                             📅 ${date.toLocaleString('ru-RU')}
                             <br>${statusText}
+                            ${authorText}
                         </div>
                         <div class="task-actions">
-                            <button class="edit-btn" onclick="editTask('${task.id}', '${task.title}', '${task.datetime}')">
+                            <button class="edit-btn" onclick="editTask('${task.id}', '${task.title.replace(/'/g, "\\'")}', '${task.datetime}', ${isFamilyTask})">
                                 ✏️ Изменить
                             </button>
-                            <button class="delete-btn" onclick="deleteTask('${task.id}', '${task.title}')">
+                            <button class="delete-btn" onclick="deleteTask('${task.id}', '${task.title.replace(/'/g, "\\'")}')">
                                 🗑️ Удалить
                             </button>
                         </div>
@@ -268,15 +664,11 @@
             }).join('');
         }
 
-        // Функция для редактирования задачи
-        async function editTask(taskId, currentTitle, currentDatetime) {
-            // Экранируем кавычки в названии
-            const safeTitle = currentTitle.replace(/"/g, '&quot;');
-            
-            const newTitle = prompt('Введите новое название задачи:', safeTitle);
+        // Редактирование задачи
+        async function editTask(taskId, currentTitle, currentDatetime, isFamilyTask) {
+            const newTitle = prompt('Введите новое название задачи:', currentTitle);
             if (newTitle === null) return;
 
-            // Форматируем дату для input[type=datetime-local]
             const date = new Date(currentDatetime);
             const formattedDate = date.toISOString().slice(0, 16);
 
@@ -310,7 +702,7 @@
             }
         }
 
-        // Функция для удаления задачи
+        // Удаление задачи
         async function deleteTask(taskId, taskTitle) {
             if (!confirm(`❌ Вы уверены что хотите удалить задачу?\n"${taskTitle}"`)) {
                 return;
@@ -341,7 +733,17 @@
             }
         }
 
-        // Функция показа ошибки
+        // Установка даты по умолчанию (завтра в это же время)
+        function setupDefaultDateTime() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setMinutes(0, 0, 0);
+            
+            const datetimeInput = document.getElementById('taskDateTime');
+            datetimeInput.value = tomorrow.toISOString().slice(0, 16);
+        }
+
+        // Показать ошибку
         function showError(message) {
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = `
@@ -354,16 +756,6 @@
                 </div>
             `;
         }
-
-        // Обновляем дату/время по умолчанию на завтра в это же время
-        window.addEventListener('DOMContentLoaded', () => {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setMinutes(0, 0, 0);
-            
-            const datetimeInput = document.getElementById('taskDateTime');
-            datetimeInput.value = tomorrow.toISOString().slice(0, 16);
-        });
     </script>
 </body>
 </html>
