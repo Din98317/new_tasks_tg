@@ -84,51 +84,45 @@
         const BOT_API_URL = 'https://api.telegram.org/bot8438607431:AAHQZWYuENj3af5THn8TgFWofTx0WyT8_gU';
         const USER_ID = tg.initDataUnsafe.user.id;
 
-        // Функция для создания новой задачи
-        async function createTask() {
-            const title = document.getElementById('taskTitle').value;
-            const datetime = document.getElementById('taskDateTime').value;
+     // Функция для создания новой задачи
+async function createTask() {
+    const title = document.getElementById('taskTitle').value;
+    const datetime = document.getElementById('taskDateTime').value;
 
-            if (!title || !datetime) {
-                alert('Пожалуйста, заполните все поля');
-                return;
-            }
+    if (!title || !datetime) {
+        alert('Пожалуйста, заполните все поля');
+        return;
+    }
 
-            const task = {
-                userId: USER_ID,
-                title: title,
-                datetime: datetime,
-                notified: false // Флаг, было ли отправлено уведомление
-            };
+    const task = {
+        userId: USER_ID,
+        title: title,
+        datetime: datetime,
+        notified: false
+    };
 
-            try {
-                // Отправляем задачу боту через специальную команду
-                const response = await fetch(`${BOT_API_URL}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: USER_ID,
-                        text: `/addtask ${JSON.stringify(task)}`
-                    })
-                });
+    try {
+        // Отправляем данные напрямую на наш сервер (Railway)
+        const response = await fetch('https://your-railway-url.railway.app/addtask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(task)
+        });
 
-                if (response.ok) {
-                    document.getElementById('taskTitle').value = '';
-                    document.getElementById('taskDateTime').value = '';
-                    loadTasks();
-                    tg.showPopup({
-                        title: 'Успех!',
-                        message: 'Задача добавлена! Вы получите уведомление за 4 часа до начала.',
-                        buttons: [{ type: 'ok' }]
-                    });
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Ошибка при создании задачи');
-            }
+        if (response.ok) {
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDateTime').value = '';
+            alert('✅ Задача добавлена! Вы получите уведомление за 4 часа до начала.');
+        } else {
+            alert('❌ Ошибка при создании задачи');
         }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('❌ Ошибка при создании задачи');
+    }
+}
 
         // Функция для загрузки и отображения задач пользователя
         async function loadTasks() {
