@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Семейные Задачи</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .task-form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .task-form input, .task-form button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .task-form button {
+            background-color: #2481cc;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .task-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .task-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .task-datetime {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="task-form">
+            <input type="text" id="taskTitle" placeholder="Название задачи">
+            <input type="datetime-local" id="taskDateTime">
+            <button onclick="createTask()">Добавить задачу</button>
+        </div>
+        <div class="task-list" id="taskList">
+            <!-- Задачи будут здесь -->
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Раскрыть приложение на весь экран
+        tg.ready(); // Сообщить Telegram, что приложение готово
+
+        const BOT_API_URL = 'https://api.telegram.org/bot8438607431:AAHQZWYuENj3af5THn8TgFWofTx0WyT8_gU';
+        const USER_ID = tg.initDataUnsafe.user.id;
+
+        // Функция для создания новой задачи
+        async function createTask() {
+            const title = document.getElementById('taskTitle').value;
+            const datetime = document.getElementById('taskDateTime').value;
+
+            if (!title || !datetime) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            const task = {
+                userId: USER_ID,
+                title: title,
+                datetime: datetime,
+                notified: false // Флаг, было ли отправлено уведомление
+            };
+
+            try {
+                // Отправляем задачу боту через специальную команду
+                const response = await fetch(`${BOT_API_URL}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: USER_ID,
+                        text: `/addtask ${JSON.stringify(task)}`
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDateTime').value = '';
+                    loadTasks();
+                    tg.showPopup({
+                        title: 'Успех!',
+                        message: 'Задача добавлена! Вы получите уведомление за 4 часа до начала.',
+                        buttons: [{ type: 'ok' }]
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при создании задачи');
+            }
+        }
+
+        // Функция для загрузки и отображения задач пользователя
+        async function loadTasks() {
+            try {
+                const response = await fetch(`${BOT_API_URL}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: USER_ID,
+                        text: '/getmytasks'
+                    })
+                });
+
+                // В реальном приложении здесь будет парсинг ответа от бота
+                // Для демонстрации просто очищаем список
+                document.getElementById('taskList').innerHTML = '<div class="task-item">Загрузка...</div>';
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        // Загружаем задачи при запуске приложения
+        loadTasks();
+    </script>
+</body>
+</html>
